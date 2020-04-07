@@ -1,45 +1,179 @@
 <html>
 <head>
- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+
+    <link href="client/view/css/app.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
 </head>
 <body>
 <div id="app">
-    <div class="movies">
-        {{info}}
-        <button class="btn-import" @click="importToBd">Импорт в бд</button>
-        <div v-for="movie in movies">
-            {{movie.title}}
-        </div>
-    </div>
+    <v-app>
+        <v-content>
+            <v-container v-cloak>
+
+                <div class="movies">
+                    <v-card
+                            class="mx-auto"
+                            max-width="844"
+                            style="padding:20px"
+                            outlined
+
+                    >
+                        <v-btn class="btn-std" @click="moviesShow(1)">Обновить</v-btn>
+                        <v-btn class="btn-std" @click="moviesParse(1)">Загрузить с ресурса</v-btn>
+                        <v-btn class="btn-std" @click="moviesImport" v-bind:disabled="!isSource">Импортировать в БД
+                        </v-btn>
+
+                        <v-card
+                                class="mx-auto"
+                                max-width="544"
+                                style="top:12px;"
+                                outlined
+                        >
+
+                            <v-list-item three-line>
+                                <v-list-item-content style="padding:8px">
+                                    <div class="overline mb-4 mt-2">Фильмы</div>
+
+                                    <v-expansion-panels>
+                                        <v-expansion-panel>
+                                            <v-expansion-panel-header>Фильмы с кадрами</v-expansion-panel-header>
+                                            <v-expansion-panel-content>
+                                                <div v-for="movie in list">
+                                                    <div class="overline mb-4 mt-2"> {{movie.title}}</div>
+
+                                                </div>
+                                                <v-pagination
+                                                        v-model="page"
+                                                        :page="page"
+                                                        :total-visible="totalVisible"
+                                                        :length="length"
+                                                        @input="pagination"
+                                                ></v-pagination>
+
+                                            </v-expansion-panel-content>
+                                        </v-expansion-panel>
+
+                                        <v-expansion-panel>
+                                            <v-expansion-panel-header>Фильмы без кадров</v-expansion-panel-header>
+                                            <v-expansion-panel-content>
+                                                <div v-for="movie in list">
+                                                    <div class="overline mb-4 mt-2"> {{movie.title}}</div>
+                                                </div>
+                                                <v-pagination
+                                                        v-model="page"
+                                                        :page="page"
+                                                        :total-visible="totalVisible"
+                                                        :length="length"
+                                                        @input="pagination"
+                                                ></v-pagination>
+
+                                            </v-expansion-panel-content>
+                                        </v-expansion-panel>
+                                    </v-expansion-panels>
+
+                                </v-list-item-content>
+
+
+                            </v-list-item>
+                        </v-card>
+                    </v-card>
+
+                </div>
+            </v-container>
+        </v-content>
+    </v-app>
+
 </div>
 
 <script>
   var app = new Vue({
     el: '#app',
+    vuetify: new Vuetify(),
     data: {
-        info: null,
-      movies: [{
-        id: 1,
-        title: 'Terminator 1',
-        image: 'url'
+      isSource: 0,
+      page: 1,
+      onPage: 10,
+      totalVisible: 8,
+      totalMovies: null, // // loaded dynamically
+      length: null, // loaded dynamically
+      list: [] // loaded dynamically
+    },
+    mounted: function () {
+      this.moviesShow();
+    },
+    computed: {
+      pagination: function () {
+        if (this.isSource) {
+          return this.moviesParse();
+        } else {
+          return this.moviesShow();
+        }
+      }
+    },
+    methods: {
+      moviesShow: function (page = 0) {
 
+        axios({
+          method: 'post',
+          url: 'index.php',
+          data: JSON.stringify({
+            api: 'movies/get',
+            page: (page) ? page : this.page,
+            onPage: this.onPage
+          })
+        })
+          .then(function (response) {
+            let movies = response.data;
+            app.page = (page) ? page : app.page;
+            app.isSource = 0;
+            app.list = movies.list;
+            app.totalMovies = movies.total;
+            // change navigation buttons length
+            app.length = Math.ceil(app.totalMovies / app.onPage);
+          })
       },
-        {
-          id: 2,
-          title: 'Terminator 2',
-          image: 'url'
+      moviesParse: function (reload = 0) {
 
-        }]
-    },
-    mounted: function(){
-      axios
-        .get('/api.php?getMovies&page=1')
-        .then(response => (this.info = response.data))
-    },
-    methods:{
-      importToBd: function(){
-        alert('lala');
+        axios({
+          method: 'post',
+          url: 'index.php',
+          data: JSON.stringify({
+            api: 'movies/parse',
+            page: this.page,
+            reload: reload,
+            onPage: this.onPage
+          })
+        })
+          .then(function (response) {
+            let movies = response.data;
+            app.isSource = 1;
+            app.list = movies.list;
+            app.totalMovies = movies.total;
+            // change navigation buttons length
+            app.length = Math.ceil(app.totalMovies / app.onPage);
+          })
+      },
+      moviesImport: function () {
+        axios({
+          method: 'post',
+          url: 'index.php',
+          data: JSON.stringify({
+            api: 'movies/import',
+            page: this.page,
+            onPage: this.onPage
+          })
+        })
+          .then(function (response) {
+            app.moviesShow(1);
+
+          })
       }
     }
   });

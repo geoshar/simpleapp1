@@ -1,0 +1,50 @@
+<html>
+<head>
+ <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<div id="app">
+    <div class="movies">
+        {{info}}
+        <button class="btn-import" @click="importToBd">Импорт в бд</button>
+        <div v-for="movie in movies">
+            {{movie.title}}
+        </div>
+    </div>
+</div>
+
+<script>
+  var app = new Vue({
+    el: '#app',
+    data: {
+        info: null,
+      movies: [{
+        id: 1,
+        title: 'Terminator 1',
+        image: 'url'
+
+      },
+        {
+          id: 2,
+          title: 'Terminator 2',
+          image: 'url'
+
+        }]
+    },
+    mounted: function(){
+      axios
+        .get('/api.php?getMovies&page=1')
+        .then(response => (this.info = response.data))
+    },
+    methods:{
+      importToBd: function(){
+        alert('lala');
+      }
+    }
+  });
+
+</script>
+
+</body>
+</html>

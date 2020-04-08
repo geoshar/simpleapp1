@@ -9,6 +9,8 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+define ( 'ROOT_DIR', dirname ( __FILE__ ) );
+
 // check if it's a post request
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
     require_once('server/api.php');

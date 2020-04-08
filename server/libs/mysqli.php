@@ -17,50 +17,51 @@ class MySQLii {
         $this->connection->query("SET SQL_MODE = ''");
     }
 
-    public function query($sql, $count=false, $show_error=true) {
+    public function query($sql, $count = false, $show_error = true) {
         $query = $this->connection->query($sql);
 
         $count = ($count) ? $this->connection->query('SELECT FOUND_ROWS()')->fetch_row()[0] : 0;
 
-        if (!$this->connection->errno) {
+        if ($this->connection->errno) {
+            throw new \Exception('Error: ' . $this->connection->error . '<br />Error No: ' . $this->connection->errno . '<br />' . $sql);
+        } else {
+            if (!$query) {
 
-            if(!$query) {
+                if ($show_error) {
 
-                if($show_error) {
-
-                    $this->display_error($this->connection->error, $this->connection->error_num, $sql);
+                    $this->display_error($this->connection->error, $this->connection->errno, $sql);
 
                 } else {
 
-                    $this->query_errors_list[] = array( 'query' => $query, 'error' => $this->connection->error );
+                    $this->query_errors_list[] = array('query' => $query, 'error' => $this->connection->error);
 
                 }
-            }
-
-            if ($query instanceof \mysqli_result) {
-                $data = array();
-
-                while ($row = $query->fetch_assoc()) {
-                    $data[] = $row;
-                }
-
-                $result = new \stdClass();
-                $result->num_rows = $query->num_rows;
-                $result->row = isset($data[0]) ? $data[0] : array();
-                $result->rows = $data;
-                $result->count = ($count) ? $count : 0;
-
-                $query->close();
-
-                return $result;
             } else {
-                return true;
+
+                if ($query instanceof \mysqli_result) {
+                    $data = array();
+
+                    while ($row = $query->fetch_assoc()) {
+                        $data[] = $row;
+                    }
+
+                    $result = new \stdClass();
+                    $result->num_rows = $query->num_rows;
+                    $result->row = isset($data[0]) ? $data[0] : array();
+                    $result->rows = $data;
+                    $result->count = ($count) ? $count : 0;
+
+                    $query->close();
+
+                    return $result;
+                } else {
+                    return true;
+                }
             }
-        } else {
-            throw new \Exception('Error: ' . $this->connection->error  . '<br />Error No: ' . $this->connection->errno . '<br />' . $sql);
         }
     }
-    function display_error($error, $error_num, $query = '') {
+
+    public function display_error($error, $error_num, $query = '') {
 
         $query = htmlspecialchars($query, ENT_QUOTES, 'utf-8');
         $error = htmlspecialchars($error, ENT_QUOTES, 'utf-8');
@@ -68,8 +69,8 @@ class MySQLii {
         $trace = debug_backtrace();
 
         $level = 0;
-        if ($trace[1]['function'] == "query" ) $level = 1;
-        if ($trace[2]['function'] == "super_query" ) $level = 2;
+        if ($trace[1]['function'] == "query") $level = 1;
+        if ($trace[2]['function'] == "super_query") $level = 2;
 
         $trace[$level]['file'] = str_replace(ROOT_DIR, "", $trace[$level]['file']);
 

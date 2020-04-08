@@ -20,23 +20,10 @@ class MySQLii {
     public function query($sql, $count = false, $show_error = true) {
         $query = $this->connection->query($sql);
 
-        $count = ($count) ? $this->connection->query('SELECT FOUND_ROWS()')->fetch_row()[0] : 0;
-
         if ($this->connection->errno) {
-            throw new \Exception('Error: ' . $this->connection->error . '<br />Error No: ' . $this->connection->errno . '<br />' . $sql);
+            $this->display_error($this->connection->error, $this->connection->errno, $sql);
         } else {
-            if (!$query) {
 
-                if ($show_error) {
-
-                    $this->display_error($this->connection->error, $this->connection->errno, $sql);
-
-                } else {
-
-                    $this->query_errors_list[] = array('query' => $query, 'error' => $this->connection->error);
-
-                }
-            } else {
 
                 if ($query instanceof \mysqli_result) {
                     $data = array();
@@ -49,6 +36,7 @@ class MySQLii {
                     $result->num_rows = $query->num_rows;
                     $result->row = isset($data[0]) ? $data[0] : array();
                     $result->rows = $data;
+                    $count = ($count) ? $this->connection->query('SELECT FOUND_ROWS()')->fetch_row()[0] : 0;
                     $result->count = ($count) ? $count : 0;
 
                     $query->close();
@@ -58,7 +46,7 @@ class MySQLii {
                     return true;
                 }
             }
-        }
+
     }
 
     public function display_error($error, $error_num, $query = '') {

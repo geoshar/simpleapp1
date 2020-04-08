@@ -1,8 +1,13 @@
 <?php
-// connect to database
-require_once('db/db.php');
 // connect libraries
+require_once('libs/mysqli.php');
 require_once('libs/htmlParser.php');
+
+// connect configuration
+require_once('config/config.php');
+// Create db connection
+$db = new MySQLii($config->db->host, $config->db->user, $config->db->password, $config->db->dbname);
+
 $apiAvailable = [
     'movies'
 ];

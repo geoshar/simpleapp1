@@ -6,13 +6,11 @@ class movies {
         $start = ($_POST['page'] - 1) * $_POST['onPage'];
         $end = $_POST['onPage'];
         // get and count movies
-        $req = $this->db->query("select SQL_CALC_FOUND_ROWS * from movies limit {$start}, {$end}");
-        $total = $this->db->query('SELECT FOUND_ROWS()')->fetch_row()[0];
-        $list = $req->fetch_all(MYSQLI_ASSOC);
+        $req = $this->db->query("select SQL_CALC_FOUND_ROWS * from movies limit {$start}, {$end}", true);
 
         return [
-            'total' => $total,
-            'list' => $list
+            'total' => $req->count,
+            'list' => $req->rows
         ];
 
     }

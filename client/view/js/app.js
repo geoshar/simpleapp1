@@ -77,7 +77,6 @@ var app = new Vue({
       })
         .then(function (response) {
           app.moviesShow(1);
-
         })
     }
   }

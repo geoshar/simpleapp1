@@ -6,9 +6,8 @@ class MySQLii {
 
     public function __construct($hostname, $username, $password, $database, $port = '3306') {
         try {
-            mysqli_report(MYSQLI_REPORT_STRICT);
 
-            $this->connection = @new \mysqli($hostname, $username, $password, $database, $port);
+            $this->connection = new mysqli($hostname, $username, $password, $database, $port);
         } catch (\mysqli_sql_exception $e) {
             throw new \Exception('Error: Could not make a database link using ' . $username . '@' . $hostname . '!');
         }

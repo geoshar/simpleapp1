@@ -11,6 +11,7 @@ error_reporting(E_ALL);
 
 define ( 'ROOT_DIR', dirname ( __FILE__ ) );
 
+session_start();
 // check if it's a post request
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
     require_once('server/api.php');

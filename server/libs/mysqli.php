@@ -1,7 +1,7 @@
 <?php
 
 class MySQLii {
-    private $connection;
+    public $connection;
     private $connected;
 
     public function __construct($hostname, $username, $password, $database, $port = '3306') {

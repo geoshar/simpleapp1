@@ -1,5 +1,6 @@
 <?php
 // connect libraries
+require_once('libs/helpers.php');
 require_once('libs/mysqli.php');
 require_once('libs/htmlParser.php');
 
@@ -25,6 +26,7 @@ if (in_array($method, $apiAvailable)) {
     if (method_exists($methodClass, $action)) {
         // assign db to a class
         $methodClass->db = $db;
+        $methodClass->result = new stdClass();
 
         // get action
         $output = $methodClass->$action();

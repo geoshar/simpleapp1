@@ -1,5 +1,5 @@
 <?php
-// configuratio file
+// configuration file
 $config = [
     'db' => [
         'host' => 'localhost',

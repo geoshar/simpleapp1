@@ -75,26 +75,6 @@ var app = new Vue({
       }).then(callback);
 
     },
-    moviesParse: function (reload = 0) {
-      this.overlay = 1;
-      axios({
-        method: 'post',
-        url: 'index.php',
-        data: JSON.stringify({
-          api: 'movies/parse',
-          page: this.page,
-          reload: reload,
-          onPage: this.onPage
-        })
-      })
-        .then(function (response) {
-          app.overlay = 0;
-          app.isSource = 1;
-          app.list = response.data;
-          // change navigation buttons length
-          app.length = Math.ceil(app.totalMovies / app.onPage);
-        })
-    },
     moviesImport: function () {
       this.overlay = 1;
       axios({

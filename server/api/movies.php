@@ -5,8 +5,8 @@ class movies {
     public function get() {
         $start = ($_POST['page'] - 1) * $_POST['onPage'];
         $end = $_POST['onPage'];
-        // get and count movies
 
+        // get and count movies
             $result = ($_POST['havePic']) ?
                 $this->db->query("SELECT SQL_CALC_FOUND_ROWS t1.*, t2.image FROM movies t1 LEFT JOIN pictures t2 ON t1.movie_id = t2.movie_id WHERE t2.image is NOT NULL AND t2.image != '' LIMIT {$start}, {$end}", true)
                 :
@@ -15,7 +15,7 @@ class movies {
         return [
             'list' => $result->rows,
             'total' => $result->count
-        ];;
+        ];
 
     }
     public function parse() {
@@ -45,8 +45,6 @@ class movies {
                 if(!isset($movies['list'][$item['movie_id']])) {
                     $movies['list'][$item['movie_id']] = $item;
                 }
-
-                //$movies['total']++;
             }
             $movies['list'] = array_values($movies['list']);
             // set to session
@@ -76,11 +74,8 @@ class movies {
             }
         }
             $movies['list'] = $list;
-
-
         // limit on page
         $movies['list'] = array_slice($movies['list'], $start, $end);
-        //die(print_r($movies['list']));
         return $movies;
     }
 
@@ -91,7 +86,6 @@ class movies {
             $this->db->query("TRUNCATE TABLE pictures");
             $insertMovies =  ArrSqlInsertInto($movies['list'],['image'], $this->db->connection);
             $insertPictures = ArrSqlInsertInto($movies['list'],['title', 'title_original'], $this->db->connection);
-
             // insert into movies
             $this->db->query("INSERT INTO movies({$insertMovies['columns']}) VALUES{$insertMovies['values']}");
             // insert into pictures
@@ -100,7 +94,6 @@ class movies {
         } else {
             $this->result->status = 0;
         }
-
         return $this->result;
     }
 }

@@ -3,20 +3,17 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
-
     <link href="client/view/css/app.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-
 </head>
 <body>
 <div id="app">
     <v-app>
         <v-content>
             <v-container v-cloak>
-
                 <div class="movies">
                     <v-card
                             class="mx-auto"
@@ -29,25 +26,22 @@
                         <v-btn class="btn-std" @click="moviesShowAll('source')">Загрузить с ресурса</v-btn>
                         <v-btn class="btn-std" @click="moviesImport" v-bind:disabled="!isSource">Импортировать в БД
                         </v-btn>
-
                         <v-card
                                 class="mx-auto"
                                 max-width="544"
                                 style="top:12px;"
                                 outlined
                         >
-
                             <v-list-item three-line>
                                 <v-list-item-content style="padding:8px">
                                     <div class="overline mb-4 mt-2">Фильмы</div>
-
                                     <v-expansion-panels v-for="(block, i) in blocks" :key="i">
                                         <v-expansion-panel>
-                                            <v-expansion-panel-header>{{block.title}}: {{block.total}}</v-expansion-panel-header>
+                                            <v-expansion-panel-header>{{block.title}}: {{block.total}}
+                                            </v-expansion-panel-header>
                                             <v-expansion-panel-content>
                                                 <div v-for="list in block.list">
                                                     <div class="overline mb-4 mt-2"> {{list.title}}</div>
-
                                                 </div>
                                                 <v-pagination
                                                         v-model="block.page"
@@ -57,17 +51,12 @@
                                                         @input="moviesShow(i, isSource ? 0 : 1)"
                                                         :key="i"
                                                 ></v-pagination>
-
                                             </v-expansion-panel-content>
                                         </v-expansion-panel>
-
                                 </v-list-item-content>
-
-
                             </v-list-item>
                         </v-card>
                     </v-card>
-
                 </div>
             </v-container>
         </v-content>
@@ -75,10 +64,7 @@
             <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
     </v-app>
-
 </div>
 <script src="client/view/js/app.js"></script>
-
-
 </body>
 </html>
